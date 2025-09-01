@@ -19,11 +19,11 @@ training/project_env/
 *.weights
 *.cache
 ocr_app/models/
-ocr_app/output/
-ocr_app/app/output/
 training/runs/
 training/output/
 output.jpg
+app/output
+ocr_dataset/
 
 # 🧪 Datasets and generated data
 datasets/
