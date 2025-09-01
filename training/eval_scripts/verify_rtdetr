@@ -1,0 +1,89 @@
+import os
+import cv2
+import random
+import matplotlib.pyplot as plt
+from ultralytics import YOLO
+
+# 📁 Paths
+model_path = "output/rtdetr.pt"
+image_dir = "data/test/images"
+label_dir = "data/test/labels"
+class_names = ["object"]
+
+# 🎯 Load model
+model = YOLO(model_path)
+
+# 🎲 Pick 10 random test images
+image_files = [f for f in os.listdir(image_dir) if f.lower().endswith(('.jpg', '.png'))]
+random.shuffle(image_files)
+
+images_to_plot = []
+count = 0
+
+print("starting inference.....")
+for img_file in image_files:
+    if count >= 10:
+        break
+
+    img_path = os.path.join(image_dir, img_file)
+    label_path = os.path.join(label_dir, os.path.splitext(img_file)[0] + ".txt")
+
+    # ⚠️ Skip if no label or multi-class label
+    if not os.path.exists(label_path):
+        continue
+    with open(label_path, "r") as f:
+        lines = [line.strip() for line in f if line.strip()]
+        class_ids = [int(line.split()[0]) for line in lines]
+        if len(set(class_ids)) > 1:
+            continue
+
+    # 🔍 Load image
+    img = cv2.imread(img_path)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    h, w = img.shape[:2]
+
+    # ✅ Draw ground truth boxes
+    for line in lines:
+        cls, x, y, bw, bh = map(float, line.split())
+        x1 = int((x - bw / 2) * w)
+        y1 = int((y - bh / 2) * h)
+        x2 = int((x + bw / 2) * w)
+        y2 = int((y + bh / 2) * h)
+        cv2.rectangle(img_rgb, (x1, y1), (x2, y2), (0, 255, 0), thickness=3)
+        cv2.putText(img_rgb, "True Label", (x1, y1 - 8),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+    # 📦 Run prediction
+    results = model.predict(img_path, conf=0.25, verbose=False)[0]
+
+    # 🟧 Draw predictions in bright orange
+    for box in results.boxes:
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+        conf = float(box.conf[0])
+        orange = (0, 165, 255)  # BGR for bright orange
+        cv2.rectangle(img_rgb, (x1, y1), (x2, y2), color=orange, thickness=4)
+        cv2.putText(img_rgb, f"Predicted {conf:.2f}", (x1, y2 + 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, orange, 2)
+
+    images_to_plot.append((img_file, img_rgb))
+    count += 1
+
+# 📊 Display all annotated images in a grid
+fig, axes = plt.subplots(2, 5, figsize=(25, 10))
+for ax, (filename, img_rgb) in zip(axes.flat, images_to_plot):
+    ax.imshow(img_rgb)
+    #ax.set_title(ax, fontsize=12)
+    ax.axis("off")
+
+print("Done.....")
+
+fig.suptitle("RT-DETR Predictions vs Ground Truth", fontsize=18)
+
+plt.tight_layout()
+
+# Save first
+plt.savefig(r"C:\Users\z00511dv\Downloads\DLproj\model performance\rt-detr predictions.png", dpi=300, bbox_inches="tight")
+print("✅ Image saved to model performance")
+
+# Then show
+plt.show()

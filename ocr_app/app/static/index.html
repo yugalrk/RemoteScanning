@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OCR Extractor</title>
+  <style>
+    #inputImageContainer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #inputImageContainer img {
+      max-width: 90vw;
+      max-height: 400px;
+      border: 1px solid #ccc;
+    }
+    #container {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .window {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 50%;
+      height: 350px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    #imageWindow img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;    /* Fit image fully inside box */
+      display: block;
+      margin: 0 auto;
+    }
+    #textWindow pre {
+      white-space: pre-wrap;
+      font-family: monospace, monospace;
+    }
+    #modelButtons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #modelButtons .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    #modelButtons button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    #modelButtons button.selected {
+      font-weight: bold;
+      background-color: #ddd;
+    }
+    #resetBtn {
+      background-color: #f44336;
+      border: none;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload Image for OCR</h2>
+
+  <div id="modelButtons">
+    <div class="buttons">
+      <button id="btn-yolo" class="selected" onclick="selectModel('yolo')">YOLO</button>
+      <button id="btn-rtdetr" onclick="selectModel('rtdetr')">RTDETR</button>
+    </div>
+    <button id="resetBtn" onclick="resetUI()">Reset</button>
+  </div>
+
+  <br>
+
+  <input type="file" id="imageInput" accept="image/*"><br><br>
+
+  <button onclick="uploadImage()">Extract Text</button>
+
+  <div id="inputImageContainer">
+    <h3>Input Image</h3>
+    <img id="preview" alt="Input Image" />
+  </div>
+
+  <div id="container">
+    <div id="imageWindow" class="window">
+      <h3>Preprocessed Image</h3>
+      <img id="processedImg" alt="Preprocessed ROI Image" />
+    </div>
+
+    <div id="textWindow" class="window">
+      <h3>Extracted Text</h3>
+      <pre id="extractedText"></pre>
+    </div>
+  </div>
+
+  <script>
+    let selectedModel = "yolo";
+
+    function selectModel(modelName) {
+      selectedModel = modelName;
+      document.getElementById("btn-yolo").classList.toggle("selected", modelName === "yolo");
+      document.getElementById("btn-rtdetr").classList.toggle("selected", modelName === "rtdetr");
+      clearResults();
+    }
+
+    function clearResults() {
+      document.getElementById('processedImg').src = '';
+      document.getElementById('extractedText').textContent = '';
+    }
+
+    function resetUI() {
+      selectModel('yolo');  // Reset to default model
+      document.getElementById('imageInput').value = '';
+      document.getElementById('preview').src = '';
+      clearResults();
+    }
+
+    function uploadImage() {
+      const fileInput = document.getElementById("imageInput");
+      const preview = document.getElementById("preview");
+
+      if (!fileInput.files.length) {
+        alert("Please select an image first.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("roi_model_name", selectedModel);
+
+      fetch("http://localhost:8000/detect-and-ocr", {
+        method: "POST",
+        body: formData,
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ocr_results && data.ocr_results.length > 0) {
+          const firstRegion = data.ocr_results[0];
+          document.getElementById('processedImg').src = firstRegion.processed_image_b64;
+          document.getElementById('extractedText').textContent = firstRegion.extracted_text;
+        } else {
+          clearResults();
+          alert("No text extracted or no regions detected.");
+        }
+      })
+      .catch((err) => {
+        clearResults();
+        alert("Error: " + err);
+      });
+    }
+  </script>
+</body>
+</html>

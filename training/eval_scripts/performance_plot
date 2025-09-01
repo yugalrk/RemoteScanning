@@ -1,0 +1,96 @@
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+from pathlib import Path
+
+# Paths
+metrics_path = Path("model performance/performance_metrics.json")
+output_dir = Path("model performance")
+output_dir.mkdir(exist_ok=True)
+
+# Load metrics
+with open(metrics_path, "r") as f:
+    results = json.load(f)
+
+# Models
+models = list(results.keys())
+
+# General metrics to compare
+general_metrics = {
+    "Precision": "precision",
+    "Recall": "recall",
+    "mAP@0.5": "map50",
+    "mAP@0.5:0.95": "map",
+    "FPS": "fps",
+    "Inference Time (s)": "inference_time"
+}
+
+# Plot general metrics
+def plot_general_metrics():
+    metric_names = list(general_metrics.keys())
+    x = np.arange(len(metric_names))
+    width = 0.35
+
+    model_values = {model: [results[model][general_metrics[m]] for m in metric_names] for model in models}
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    for i, model in enumerate(models):
+        offset = -width/2 + i * width
+        bars = ax.bar(x + offset, model_values[model], width, label=model)
+        for bar in bars:
+            height = bar.get_height()
+            ax.annotate(f'{height:.2f}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3),
+                        textcoords="offset points",
+                        ha='center', va='bottom', fontsize=8)
+
+    ax.set_ylabel('Score / Time')
+    ax.set_title('General Model Performance Comparison')
+    ax.set_xticks(x)
+    ax.set_xticklabels(metric_names)
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(output_dir / "general_metrics_comparison.png")
+    plt.close()
+    print("✅ Saved: general_metrics_comparison.png")
+
+# Plot per-class mAP@0.5
+def plot_per_class_map():
+    # Check if per-class maps exist
+    for model in models:
+        if "per_class_map50" not in results[model]:
+            print(f"⚠️ Skipping per-class mAP plot for {model} (missing data)")
+            return
+
+    class_names = list(results[models[0]]["per_class_map50"].keys())
+    x = np.arange(len(class_names))
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(14, 6))
+    for i, model in enumerate(models):
+        values = [results[model]["per_class_map50"][cls] for cls in class_names]
+        offset = -width/2 + i * width
+        bars = ax.bar(x + offset, values, width, label=model)
+        for bar in bars:
+            height = bar.get_height()
+            ax.annotate(f'{height:.2f}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3),
+                        textcoords="offset points",
+                        ha='center', va='bottom', fontsize=7)
+
+    ax.set_ylabel('mAP@0.5')
+    ax.set_title('Per-Class mAP@0.5 Comparison')
+    ax.set_xticks(x)
+    ax.set_xticklabels(class_names, rotation=45, ha='right')
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(output_dir / "per_class_map50_comparison.png")
+    plt.close()
+    print("✅ Saved: per_class_map50_comparison.png")
+
+# Run all plots
+if __name__ == "__main__":
+    plot_general_metrics()
+    plot_per_class_map()

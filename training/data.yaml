@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['steps', 'warning']
+
+roboflow:
+  workspace: dipjyoti
+  project: my-first-project-jxxpf
+  version: 17
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/dipjyoti/my-first-project-jxxpf/dataset/17

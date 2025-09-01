@@ -1,0 +1,17 @@
+676 RSNA 2020 Neuro
+Exam Edit End
+Task
+# Status Description % Time
+2 Done 2: Ax T2 FSE fast
+3 Done ----Brain AirX
+4 Done 4: Ax T2 FSE fast
+5 Done 5: Sag T2 FSE Pit
+6 Done 6: Ax T2 FSE HR
+7 Done 7: Ax TOF HS
+8 ACT 3D Sag T2 FLAIR Cube 03:38
+9 3D Sag T2 FLAIR Cube 05:00
+10 Ax TOF HS 07:40
+11 Cor T2 STIR TL 03:02
+12 Ax DWI H8 00:26
+13 InRx 3D Sag T1 MPRAGE... 03:38
+14 ----C Spine----

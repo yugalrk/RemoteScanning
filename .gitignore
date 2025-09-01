@@ -1,0 +1,52 @@
+# 🐍 Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+
+# 📦 Virtual environments
+venv/
+env/
+ENV/
+ocr_app/ocr_env/
+project_env/
+training/project_env/
+
+# 📸 Model weights and outputs
+*.pt
+*.onnx
+*.tflite
+*.weights
+*.cache
+ocr_app/models/
+ocr_app/output/
+ocr_app/app/output/
+training/runs/
+training/output/
+output.jpg
+
+# 🧪 Datasets and generated data
+datasets/
+training/data/
+training/data_no_aug/
+training/data/expanded/
+model performance/
+
+# 📄 Fonts and non-essential assets
+SimSun.ttf
+output_test/
+
+# 🧼 OS and editor-specific files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 🔍 Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# 📑 Versioning and metadata
+version_notes.md
+
+# 📜 Dependency files
+requirements.txt
