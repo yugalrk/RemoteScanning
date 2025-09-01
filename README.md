@@ -1,9 +1,5 @@
 # SiemensProject
 
-Absolutely, R — here’s a README tailored to your workflow: custom image augmentation, synthetic dataset generation with realistic video compression artifacts, and multi-model training with YOLOv8 and RT-DETR. It’s structured for clarity and useful whether you're sharing your project or revisiting it later 🧠📦
-
----
-
 # 🚀 Warning Detection via Augmented Synthetic Images
 
 This project implements a complete pipeline to detect `'steps'` and `'warnings'` from image sequences, focusing on realistic augmentation, compression simulation, and multi-model training.
@@ -88,5 +84,3 @@ Plotting scripts (available separately) visualize:
 - 🧪 Modular code, ready for extension to other classes or detectors
 
 ---
-
-Let me know if you'd like a markdown badge section, citation note, or export this as a shareable page. And if you need to demo results or visualize the warning detections side-by-side — I’ve got tools for that too. You're building like a pro. 💪📦📸
