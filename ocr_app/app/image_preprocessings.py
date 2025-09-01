@@ -1,4 +1,9 @@
-def preprocess_original(crop, region_id):
+import cv2
+import numpy as np
+from skimage.filters import threshold_sauvola
+from PIL import Image
+
+def preprocess_original(crop):
     # Original preprocessing method
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
@@ -11,8 +16,8 @@ def preprocess_original(crop, region_id):
     ])
     sharpened = cv2.filter2D(rescaled, -1, kernel)
     final_img = Image.fromarray(sharpened)
-    os.makedirs("output/preprocessed_original", exist_ok=True)
-    final_img.save(f"output/preprocessed_original/region_{region_id}.png")
+    #os.makedirs("output/preprocessed_original", exist_ok=True)
+    #final_img.save(f"output/preprocessed_original/region_{region_id}.png")
     return final_img
 
 def preprocess_otsu(crop, region_id, denoise_h=30):
@@ -31,8 +36,9 @@ def preprocess_otsu(crop, region_id, denoise_h=30):
     final_img.save(f"output/preprocessed_otsu/region_{region_id}_otsu.png")
     return final_img
 
-def preprocess_sauvola(crop, region_id, window_size=19, k=0.3, denoise_h=31):
-    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+def preprocess_sauvola(crop, window_size=19, k=0.3, denoise_h=31):
+
+    gray = cv2.cvtColor(np.array(crop), cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     enhanced = clahe.apply(gray)
     sauvola_thresh = threshold_sauvola(enhanced, window_size=window_size, k=k)
@@ -55,8 +61,8 @@ def preprocess_sauvola(crop, region_id, window_size=19, k=0.3, denoise_h=31):
     # Update final_img with processed array
     final_img = Image.fromarray(sharpened)
 
-    os.makedirs("output/preprocessed_sauvola", exist_ok=True)
-    final_img.save(f"output/preprocessed_sauvola/region_{region_id}_sauvola.png")
+    #os.makedirs("output/preprocessed_sauvola", exist_ok=True)
+    #final_img.save(f"output/preprocessed_sauvola/region_{region_id}_sauvola.png")
     return final_img
 
 def preprocess_niblack(crop, region_id, window_size=25, k=0.1, denoise_h=29):

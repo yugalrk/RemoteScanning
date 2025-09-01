@@ -1,0 +1,26 @@
+Region 1 bbox [10, 7, 415, 568]
+Image: C:\Users\z00511dv\Downloads\DLproj\ocr_app\output\preprocessed_rois\region_1_sauvola.png
+Text:
+End
+Exam Edit
+Task . Series Data
+.Status Description Time
+Done 2. Ax T2 FSE fast
+Done 3: -_--&rain AlrX-___
+Done 4: Ax T2 FSE fast
+5: Sag T2 FSE PIt 1
+Done
+Done 6: AX T2 FSE HR
+}$
+Done 7: Ax TOF HS
+3D Saq T2 FLAiR Cube 03:38
+ACT
+3D Sag T2 FLAIR Cube 05:00
+Ax TOF HS 07:40
+Cor T2 StIR TL 03:02
+]
+Ax DWI H8 00:26
+InRx 3d Sag TI MPrage ... 03:38
+Avg Confidence: 96.30%
+
+----------------------------------------

@@ -1,0 +1,6 @@
+Region 1 bbox [6, 13, 420, 571]
+Image: C:\Users\z00511dv\Downloads\DLproj\ocr_app\output\preprocessed_rois\region_1_sauvola.png
+Text:
+676 RSNA 2020 Neuro
+
+----------------------------------------
