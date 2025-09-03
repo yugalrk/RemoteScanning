@@ -5,16 +5,22 @@ import numpy as np
 from PIL import Image
 
 class PaddleOcrWrapper:
-    def __init__(self, lang='en', use_textline_orientation=True, confidence_threshold=0.75, line_threshold=10):
-        self.ocr = PaddleOCR(use_textline_orientation=use_textline_orientation, lang=lang)
+    def __init__(self, confidence_threshold=0.65, line_threshold=30):
+        self.ocr = PaddleOCR(
+            # text_detection_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\PP-OCRv5_server_det",
+            # text_recognition_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\en_PP-OCRv5_mobile_rec",
+            # textline_orientation_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\PP-LCNet_x1_0_textline_ori",
+            use_textline_orientation=True,
+            lang='en'
+        )
         self.confidence_threshold = confidence_threshold
         self.line_threshold = line_threshold
 
     def predict(self, pil_img: Image.Image):
         # Convert PIL image to numpy BGR for PaddleOCR
-        #img_np = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
-        img_np = pil_img
-        img_np = cv2.resize(img_np, None, fx=1, fy=1)
+        img_np = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+        img_np = cv2.resize(img_np, None, fx=1.5, fy=1.5)
+
         results = self.ocr.predict(img_np)
         if not results:
             return [], 0.0
