@@ -1,18 +1,16 @@
-# main.py
 import os
 import uuid
 import time
 import numpy as np
 import cv2
-import base64
-from io import BytesIO
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 from fastapi.middleware.cors import CORSMiddleware
 
-from model import detect_objects  # your detection model
+from image_preprocessings import preprocess_for_ocr
+from roi_detection_model import detect_objects  # your detection model
 from ocr_paddle import PaddleOcrWrapper  # Import OCR wrapper class
 
 app = FastAPI()
@@ -35,25 +33,12 @@ OCR_RESULTS_DIR = os.path.join(OUTPUT_DIR, "ocr_results")
 os.makedirs(PREPROCESSED_ROIS_DIR, exist_ok=True)
 os.makedirs(OCR_RESULTS_DIR, exist_ok=True)
 
-
-def preprocess_sauvola(crop_bgr, region_id, window_size=19, k=0.3, denoise_h=31):
-    from skimage.filters import threshold_sauvola
-    gray = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2GRAY)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    sauvola_thresh = threshold_sauvola(enhanced, window_size=window_size, k=k)
-    sauvola_binary = (enhanced > sauvola_thresh).astype(np.uint8) * 255
-    denoised = cv2.fastNlMeansDenoising(sauvola_binary, None, h=denoise_h, templateWindowSize=7, searchWindowSize=21)
-    rescaled = cv2.resize(denoised, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-    sharpened = cv2.filter2D(rescaled, -1, kernel)
-    final_img = Image.fromarray(sharpened)
-    save_path = os.path.join(PREPROCESSED_ROIS_DIR, f"region_{region_id}_sauvola.png")
-    final_img.save(save_path)
-    return final_img, save_path
+ocr_wrapper = PaddleOcrWrapper()  # Your modular OCR
 
 
 def pil_image_to_base64_str(pil_img: Image.Image):
+    from io import BytesIO
+    import base64
     buffered = BytesIO()
     pil_img.save(buffered, format="PNG")
     b64_bytes = base64.b64encode(buffered.getvalue())
@@ -61,14 +46,26 @@ def pil_image_to_base64_str(pil_img: Image.Image):
     return f"data:image/png;base64,{base64_str}"
 
 
-ocr_wrapper = PaddleOcrWrapper()
+@app.get("/")
+def root():
+    return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
 
 
 @app.post("/detect-and-ocr")
-async def detect_and_ocr(file: UploadFile = File(...), roi_model_name: str = Form("yolo")):
+async def detect_and_ocr(
+    file: UploadFile = File(...),
+    roi_model_name: str = Form("yolo"),
+    use_preprocessing: bool = Form(True),  # Add flag here
+):
     file_bytes = await file.read()
     np_img = np.frombuffer(file_bytes, np.uint8)
     img_bgr = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+
+    if img_bgr is None:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Could not decode image. Please upload a valid image file."},
+        )
 
     boxes, class_names = detect_objects(img_bgr, model_name=roi_model_name)
 
@@ -79,22 +76,30 @@ async def detect_and_ocr(file: UploadFile = File(...), roi_model_name: str = For
         x1, y1, x2, y2 = map(int, box[:4])
         crop = img_bgr[y1:y2, x1:x2]
 
-        processed_img, proc_path = preprocess_sauvola(crop, region_id=i + 1)
+        if use_preprocessing:
+            # Apply preprocessing function if enabled
+            preprocessed_img = preprocess_for_ocr(crop)
+        else:
+            preprocessed_img = crop
 
-        pil_img = (
-            processed_img.convert("RGB") if isinstance(processed_img, Image.Image) else Image.fromarray(cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB))
-        )
+        # Convert to PIL Image if not already
+        if not isinstance(preprocessed_img, Image.Image):
+            pil_img = Image.fromarray(cv2.cvtColor(preprocessed_img, cv2.COLOR_BGR2RGB))
+        else:
+            pil_img = preprocessed_img
 
         output_lines, avg_confidence = ocr_wrapper.predict(pil_img)
         output_text = "\n".join(output_lines)
 
-        b64_img = pil_image_to_base64_str(processed_img)
+        b64_img = pil_image_to_base64_str(pil_img)
+
+        processed_image_path = None  # Optionally save processed images
 
         ocr_results.append(
             {
                 "region_id": i + 1,
                 "bbox": [x1, y1, x2, y2],
-                "processed_image_path": proc_path,
+                "processed_image_path": processed_image_path,
                 "processed_image_b64": b64_img,
                 "extracted_text": output_text,
                 "average_confidence": avg_confidence,
@@ -108,7 +113,8 @@ async def detect_and_ocr(file: UploadFile = File(...), roi_model_name: str = For
     with open(combined_path, "w", encoding="utf-8") as f:
         for res in ocr_results:
             f.write(f"Region {res['region_id']} bbox {res['bbox']}\n")
-            f.write(f"Image: {res['processed_image_path']}\n")
+            if res["processed_image_path"]:
+                f.write(f"Image: {res['processed_image_path']}\n")
             f.write(f"Text:\n{res['extracted_text']}\n")
             f.write(f"Avg Confidence: {res['average_confidence']:.2%}\n\n{'-'*40}\n")
 

@@ -6,7 +6,7 @@ image_path = r'C:\Users\z00511dv\Downloads\image_test.jpg'
 img = cv2.imread(image_path)
 print(img.shape)
 
-img_small = cv2.resize(img, None, fx=1, fy=1)
+img_small = cv2.resize(img, None, fx=1.5, fy=1.5)
 
 if img_small is None:
     print("Image not loaded, check path.")
@@ -24,7 +24,7 @@ else:
 
         # Group text by line (vertical proximity)
         lines = []
-        line_threshold = 10
+        line_threshold = 30
 
         for i, box in enumerate(rec_polys):
             text = rec_texts[i]
