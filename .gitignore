@@ -24,6 +24,7 @@ training/output/
 output.jpg
 app/output
 ocr_dataset/
+paddle_models
 
 # 🧪 Datasets and generated data
 datasets/

@@ -1,0 +1,13 @@
+Region 1 bbox [303, 661, 808, 1039]
+Text:
+2 Localizer_TRA B1
+3  Localizer_2CH D 00:
+4Localizer_shortaxis 00:
+5 1 Cine_4CH 00
+6 1 cine_2CH
+1 cine_SHAX
+8 1 cine_3ch
+9* cine_lvot
+Avg Confidence: 91.84%
+
+----------------------------------------

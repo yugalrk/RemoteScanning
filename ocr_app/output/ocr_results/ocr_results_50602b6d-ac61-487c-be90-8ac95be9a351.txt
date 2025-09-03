@@ -1,0 +1,50 @@
+Region 1 bbox [92, 132, 458, 761]
+Text:
+CMR VOLUNTEER, 02-04-2024
+ARVC(CS) 00:06:24
+1,1 SURVEY
+SSH_20_A... AXI
+SSH_20_SAG SAG
+SSH_20_COR COR
+SSH_2CH 2CH...
+SSH_SAX SAX.
+CINE 4CH 4CH
+CINE 3CH 3CH
+CINE LVOT LVOT
+EA CINE 2CH 2CH
+CINE SAX... SAX
+CINEAXIF. AXI
+CINE 2CH RT 2 CH...
+CINE RVOT RVOT
+EAc CINE RPA RPA
+CINE LPA LPA
+CINE MPA... MPA...
+^
+Add new scan item..
+Avg Confidence: 96.85%
+
+----------------------------------------
+Region 2 bbox [86, 0, 460, 627]
+Text:
+CMR VOLUNTEER
+Registration ID: 01-01-1991 CMR VOLUNTEER Plan
+Date of Birth: Gender: Male Review
+CMR VOLUNTEER, 02-04-2024
+ARVC(CS) 00:06:24
+1,1 √A SURVEY
+SSH_20_A... AXI
+SSH 20 SAG SAG
+SSH_20_COR COR
+SSH_2CH 2CH.
+SSH_SAX SAX.
+A CINE 4CH 4CH
+Ac CINE 3CH 3CH
+A CINE LVOT LVOT
+CINE 2CH 2CH
+Ac CINE SAX... SAX
+A CINE AXI F... AXI
+EAC CINE 2CH RT 2 CH...
+CINE RVOT RVOT
+Avg Confidence: 96.01%
+
+----------------------------------------
