@@ -1,7 +1,0 @@
-Region 1 bbox [10, 7, 415, 568]
-Image: C:\Users\z00511dv\Downloads\DLproj\ocr_app\output\preprocessed_rois\region_1_sauvola.png
-Text:
-
-Avg Confidence: 0.00%
-
-----------------------------------------
