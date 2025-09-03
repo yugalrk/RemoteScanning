@@ -1,7 +1,70 @@
 import cv2
 import numpy as np
-from skimage.filters import threshold_sauvola
 from PIL import Image
+from skimage.filters import threshold_sauvola
+import imutils
+from pathlib import Path
+
+debug_folder = Path(r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\app\debug_outputs')
+debug_folder.mkdir(parents=True, exist_ok=True)  # Ensure it exists
+
+def preprocess_for_ocr(crop, window_size=15, k=0.5, debug=False):
+    img = np.array(crop) if isinstance(crop, Image.Image) else crop
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    if debug: Image.fromarray(gray).save(debug_folder/"step1_gray.jpg")
+
+    # CLAHE
+    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
+    if debug: Image.fromarray(enhanced).save(debug_folder/"step2_clahe.jpg")
+
+    # Gamma correction
+    def adjust_gamma(image, gamma=1.2):
+        invGamma = 1.0 / gamma
+        table = np.array([(i / 255.0) ** invGamma * 255 for i in range(256)]).astype("uint8")
+        return cv2.LUT(image, table)
+
+    enhanced = adjust_gamma(enhanced)
+    if debug: Image.fromarray(enhanced).save(debug_folder/"step3_gamma.jpg")
+
+    # Denoising
+    denoise_h = 10
+    denoised = cv2.fastNlMeansDenoising(enhanced, None, h=denoise_h, templateWindowSize=7, searchWindowSize=21)
+    if debug: Image.fromarray(denoised).save(debug_folder/"step4_denoised.jpg")
+
+    # 🔍 Contrast check
+    # contrast = np.std(denoised)
+    # if contrast < 30:
+    #     # 🚫 Skip binarization — use contrast stretching
+    #     min_val = np.min(denoised)
+    #     max_val = np.max(denoised)
+    #     stretched = ((denoised - min_val) / (max_val - min_val + 1e-5) * 255).astype(np.uint8)
+    #     binary = stretched
+    #     if debug: Image.fromarray(binary).save(debug_folder/"step5_stretched.jpg")
+    # else:
+    #     # ✅ Apply binarization
+    #     try:
+    #         sauvola_thresh = threshold_sauvola(denoised, window_size=window_size, k=k)
+    #         binary = (denoised > sauvola_thresh).astype(np.uint8) * 255
+    #     except Exception:
+    #         binary = cv2.adaptiveThreshold(denoised, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
+    #                                        cv2.THRESH_BINARY, 15, 10)
+    #     if debug: Image.fromarray(binary).save(debug_folder/"step5_binary.jpg")
+
+    # Resize
+    rescaled = cv2.resize(denoised, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
+
+    # Sharpen
+    kernel = np.array([[0, -0.5, 0],
+                       [-0.5, 3, -0.5],
+                       [0, -0.5, 0]])
+    sharpened = cv2.filter2D(rescaled, -1, kernel)
+    if debug: Image.fromarray(sharpened).save(debug_folder/"step5_sharpened.jpg")
+
+    final_img = Image.fromarray(cv2.cvtColor(sharpened, cv2.COLOR_GRAY2RGB))
+
+    return final_img
+
 
 def preprocess_original(crop):
     # Original preprocessing method

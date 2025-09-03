@@ -1,11 +1,12 @@
 from ocr_qwen import model, processor
 from PIL import Image
 import os
-from image_preprocessings import preprocess_sauvola, preprocess_original
+from image_preprocessings import preprocess_sauvola, preprocess_original, preprocess_for_ocr
 # 📁 Folder containing images
 image_folder = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\images'
-output_folder = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\ground_truths'
-output_folder_og = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\ground_truths_og'
+#output_folder = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\ground_truths'
+#output_folder_og = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\ground_truths_og'
+output_folder = r'C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\no_binarizing'
 
 
 # 🧠 OCR prompt template
@@ -17,8 +18,10 @@ conversation_template = [
             {
                 "type": "text",
                 "text": (
+                    "The extraction will be of steps of a scan process and they usually have a step number at the beginning of the row and a time stamp at the end of row."
                     "Extract all text from this image exactly as it appears including duplicates or near-duplicates. "
-                    "Duplicates are perfectly accepted. "
+                    "Make sure to go from left to right of the image till the last pixel to not miss any information"
+                    "Extractions may have rows that are exactly same. "
                     "Return each detected line separately, one line per output line. "
                     "The text usually starts with a number, make sure the extracted text has the numbering right and in proper order. "
                     "Preserve the original order and formatting. "
@@ -43,7 +46,9 @@ for filename in os.listdir(image_folder):
         img = Image.open(image_path)
         w, h = img.size
         resized_img = img.resize((w , h))
-        resized_img = preprocess_sauvola(resized_img)
+        #resized_img = preprocess_sauvola(resized_img)
+        #resized_img = preprocess_original(resized_img)
+        resized_img = preprocess_for_ocr(resized_img)
 
         # Prepare prompt
         text_prompt = processor.apply_chat_template(conversation_template, add_generation_prompt=True)
@@ -57,7 +62,7 @@ for filename in os.listdir(image_folder):
 
         # Save output
         base_name = os.path.splitext(filename)[0]
-        output_file = os.path.join(output_folder_og, f"extraction_{base_name}.txt")
+        output_file = os.path.join(output_folder, f"extraction_{base_name}.txt")
         with open(output_file, 'w', encoding='utf-8') as f:
             for line in output_text[0].split('\n'):
                 f.write(line.strip() + '\n')
