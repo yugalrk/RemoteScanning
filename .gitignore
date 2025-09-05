@@ -19,6 +19,7 @@ training/project_env/
 *.weights
 *.cache
 ocr_app/models/
+ocr_app/output
 training/runs/
 training/output/
 output.jpg
