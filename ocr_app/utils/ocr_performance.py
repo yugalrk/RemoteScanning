@@ -53,7 +53,8 @@ for fname in filenames:
         gt_text = f.read()
 
     with open(ocr_path, 'r', encoding='utf-8') as f:
-        ocr_text = f.read()
+        lines = f.readlines()
+        ocr_text = ''.join(lines[:-1])
 
     result = compare_extraction(ocr_text, gt_text)
     total_score += result['match_rate']

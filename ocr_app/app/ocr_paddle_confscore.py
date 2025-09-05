@@ -2,7 +2,7 @@ from paddleocr import PaddleOCR
 import cv2
 import numpy as np
 
-image_path = r'C:\Users\z00511dv\Downloads\image_test.jpg'
+image_path = r"C:\Users\z00511dv\Downloads\screenshot_20250613_171651_0012 (1).png"
 img = cv2.imread(image_path)
 print(img.shape)
 
