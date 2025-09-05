@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 class PaddleOcrWrapper:
-    def __init__(self, confidence_threshold=0.65, line_threshold=30):
+    def __init__(self, confidence_threshold=0.75, line_threshold=30):
         self.ocr = PaddleOCR(
             # text_detection_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\PP-OCRv5_server_det",
             # text_recognition_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\en_PP-OCRv5_mobile_rec",
