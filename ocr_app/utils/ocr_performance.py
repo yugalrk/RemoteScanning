@@ -22,8 +22,8 @@ def compare_extraction(ocr_text, ground_truth):
     }
 
 # Paths to folders
-extractions_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\extractions_paddle1.5x"
-ground_truth_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\ground_truths"
+extractions_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\warnings\extractions"
+ground_truth_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\warnings\ground_truths"
 
 def extract_number(filename):
     match = re.search(r'\d+', filename)
@@ -33,7 +33,7 @@ def extract_number(filename):
 filenames = sorted([
     f for f in os.listdir(ground_truth_folder)
     if f.lower().endswith('.txt')
-], key=extract_number)[:10]  # First 10 only
+], key=extract_number)[:20]  # First 10 only
 
 total_score = 0
 results = []
@@ -41,8 +41,8 @@ results = []
 for fname in filenames:
     gt_path = os.path.join(ground_truth_folder, fname)
     #ocr_path = os.path.join(extractions_folder, fname)
-    ocr_fname = fname.replace("extraction_", "")
-    ocr_path = os.path.join(extractions_folder, ocr_fname)
+    #ocr_fname = fname.replace("extraction_", "")
+    ocr_path = os.path.join(extractions_folder, gt_path)
 
 
     if not os.path.exists(ocr_path):
@@ -50,7 +50,8 @@ for fname in filenames:
         continue
 
     with open(gt_path, 'r', encoding='utf-8') as f:
-        gt_text = f.read()
+        gt_text = f.readlines()
+        gt_text = ''.join(gt_text[:-1])
 
     with open(ocr_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()

@@ -5,7 +5,7 @@ from paddleocr import PaddleOCR
 
 # Paths
 input_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\warnings\images"
-output_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\warnings\ground_truths"
+output_folder = r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\ocr_dataset\warnings\extractions"
 os.makedirs(output_folder, exist_ok=True)
 
 # Initialize OCR once
