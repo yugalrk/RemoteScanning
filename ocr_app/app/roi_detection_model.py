@@ -1,8 +1,8 @@
 from ultralytics import YOLO
 
 # Load your trained models once
-model1 = YOLO(r"C:\\Users\\z00511dv\\Downloads\\DLproj\\ocr_app\\models\\yolo.pt")
-model2 = YOLO(r"C:\\Users\\z00511dv\\Downloads\\DLproj\\ocr_app\\models\\rtdetr.pt")
+model1 = YOLO(r"C:\\Users\\z00511dv\\Downloads\\DLproj\\ocr_app\\models\\yolo_best.pt")
+model2 = YOLO(r"C:\\Users\\z00511dv\\Downloads\\DLproj\\ocr_app\\models\\rtdetr_best.pt")
 
 # Map model names to model instances
 ROI_MODELS = {
