@@ -17,8 +17,8 @@ class PaddleOcrWrapper:
         self.line_threshold = line_threshold
 
     def predict(self, pil_img: Image.Image):
-        # Convert PIL image to numpy BGR for PaddleOCR
         img_np = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+        # Optional: make resizing configurable or conditional
         img_np = cv2.resize(img_np, None, fx=1.5, fy=1.5)
 
         results = self.ocr.predict(img_np)
@@ -29,8 +29,6 @@ class PaddleOcrWrapper:
         rec_texts = page_result.get('rec_texts', [])
         rec_polys = page_result.get('rec_polys', [])
         rec_scores = page_result.get('rec_scores', [])
-
-        min_len = min(len(rec_texts), len(rec_polys), len(rec_scores))
 
         lines = []
         for i, box in enumerate(rec_polys):
@@ -68,6 +66,7 @@ class PaddleOcrWrapper:
         avg_confidence = sum(all_scores) / len(all_scores) if all_scores else 0.0
 
         return output_lines, avg_confidence
+
 
 
 # Optional: instantiate globally if needed for direct call
