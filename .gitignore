@@ -27,7 +27,7 @@ output.jpg
 app/output
 ocr_dataset/
 paddle_models
-app/PaddleOCR
+ocr_app/app/PaddleOCR
 PaddleOCR
 # 🧪 Datasets and generated data
 datasets/
