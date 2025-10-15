@@ -1,7 +1,8 @@
+import sys
+sys.path.insert(0, r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\PaddleOCR")
 from paddleocr import PaddleOCR
 import cv2
 import numpy as np
-import os
 
 image_path = r"C:\Users\z00511dv\Downloads\test_img_roi.png"
 img = cv2.imread(image_path)
@@ -14,7 +15,7 @@ if img_small is None:
 else:
     print("initialting OCR")
     
-    ocr = PaddleOCR(use_textline_orientation=True, lang='en')
+    ocr = PaddleOCR(use_gpu =True,use_textline_orientation=True, lang='en')
     try:
         results = ocr.ocr(img_small)
         print("OCR call finished")

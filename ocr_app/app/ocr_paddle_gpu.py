@@ -1,11 +1,13 @@
-# ocr_paddle.py
-from paddleocr import PaddleOCR
+from PaddleOCR.paddleocr import PaddleOCR
 import cv2
 import numpy as np
 from PIL import Image
 
 class PaddleOcrWrapper:
     def __init__(self, confidence_threshold=0.75, line_threshold=30):
+        import paddle
+        print("using device:",paddle.get_device())
+        print("compiled with cuda:",paddle.is_compiled_with_cuda())
         self.ocr = PaddleOCR(
             # text_detection_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\PP-OCRv5_server_det",
             # text_recognition_model_dir=r"C:\Users\z00511dv\Downloads\DLproj\ocr_app\paddle_models\en_PP-OCRv5_mobile_rec",

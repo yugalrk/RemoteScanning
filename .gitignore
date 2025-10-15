@@ -9,6 +9,7 @@ venv/
 env/
 ENV/
 ocr_app/ocr_env/
+ocr_app/ocr_gpu/
 project_env/
 training/project_env/
 
@@ -26,7 +27,8 @@ output.jpg
 app/output
 ocr_dataset/
 paddle_models
-
+app/PaddleOCR
+PaddleOCR
 # 🧪 Datasets and generated data
 datasets/
 training/data/

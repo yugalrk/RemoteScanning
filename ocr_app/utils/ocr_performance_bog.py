@@ -63,8 +63,8 @@ for fname in filenames:
 
 # Final report
 average_score = total_score / len(results) if results else 0
-print(f"\n🔍 Evaluated {len(results)} files")
-print(f"📊 Average Match Rate: {average_score:.2%}\n")
+print(f"\nEvaluated {len(results)} files")
+print(f"Average Match Rate of Tokens: {average_score:.2%}\n")
 
 for fname, score in results:
     print(f"{fname}: {score:.2%}")
